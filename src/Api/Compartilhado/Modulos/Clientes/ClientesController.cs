@@ -20,7 +20,7 @@ public class ClientesController(
 ) : ControllerBase
 {
     [AllowAnonymous]
-    [HttpPost]
+    [HttpPost("cadastro")]
     public async Task<ActionResult<AutenticacaoClienteResponse>> Cadastrar(CadastrarClienteRequest req)
     {
         var cliente = new Cliente(Guid.CreateVersion7(), req.Nome, req.Cpf);
@@ -93,5 +93,31 @@ public class ClientesController(
 
             return Conflict();
         }
+    }
+    [AllowAnonymous]
+    [HttpPost("login")]
+    public async Task<ActionResult> Login(AutenticarClienteRequest req)
+    {
+        var usuario = await userManager.FindByEmailAsync(req.Email.Trim());
+
+        if (usuario is null)
+            return Unauthorized();
+
+        var resultadoAutenticacao = await signInManager.CheckPasswordSignInAsync(
+            usuario,
+            req.Senha,
+            lockoutOnFailure: true);
+
+        if (!resultadoAutenticacao.Succeeded)
+            return Unauthorized();
+
+        var jwt = jwtProvider.CriarToken(usuario.Id, usuario.Email!, TipoUsuario.Cliente);
+
+        return StatusCode(StatusCodes.Status200OK,
+        new AutenticacaoClienteResponse(
+            usuario.Id,
+            jwt.AccessToken,
+            jwt.DataExpiracaoEmUtc
+        ));
     }
 }

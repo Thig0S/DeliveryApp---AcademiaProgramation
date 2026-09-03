@@ -12,3 +12,5 @@ public sealed record AutenticacaoClienteResponse(
     string AccessToken,
     DateTime DataExpiracaoEmUtc
 );
+
+public sealed record AutenticarClienteRequest(string Email, string Senha);
