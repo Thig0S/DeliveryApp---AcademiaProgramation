@@ -1,0 +1,14 @@
+namespace DeliveryApp.WebApi.Compartilhado.Modulos.Clientes;
+
+public sealed record CadastrarClienteRequest(
+    string Nome,
+    string Cpf,
+    string Email,
+    string Senha
+);
+
+public sealed record AutenticacaoClienteResponse(
+    Guid ClienteId,
+    string AccessToken,
+    DateTime DataExpiracaoEmUtc
+);
