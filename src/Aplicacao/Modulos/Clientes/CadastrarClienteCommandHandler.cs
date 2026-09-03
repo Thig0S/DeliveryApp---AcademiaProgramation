@@ -2,6 +2,7 @@ using DeliveryApp.Aplicacao.Compartilhado;
 using DeliveryApp.Aplicacao.Modulos.Clientes;
 using DeliveryApp.Dominio.Modulos.Clientes;
 using FluentResults;
+using MediatR;
 
 namespace DeliveryApp.WebApi.Compartilhado.Modulos.Clientes;
 
@@ -9,13 +10,13 @@ public sealed record CadastrarClienteComand(
     Guid Id,
     string Nome,
     string Cpf
-);
+) : IRequest<Result>;
 
 public sealed class CadastrarClienteCommandHandler(
     IRepositorioCliente repositorioCliente
-)
+) : IRequestHandler<CadastrarClienteComand, Result>
 {
-    public async Task<Result> Handle(CadastrarClienteComand command)
+    public async Task<Result> Handle(CadastrarClienteComand command, CancellationToken cancellationToken = default)
     {
         var cliente = new Cliente(command.Id, command.Nome, command.Cpf);
 

@@ -2,16 +2,20 @@ using DeliveryApp.Aplicacao.Compartilhado;
 using DeliveryApp.Dominio.Compartilhado.Auth;
 using DeliveryApp.Dominio.Modulos.Clientes;
 using FluentResults;
+using MediatR;
 
 namespace DeliveryApp.Aplicacao.Modulos.Clientes;
 
-public sealed record ObterClientePorIdQuery(Guid ClienteId);
+public sealed record ObterClientePorIdQuery(Guid ClienteId, CancellationToken CancellationToken) : IRequest<Result<ClienteDto>>;
+// com isso o mediator entende o que o metodo que tem esse parametro deve retornar 
 
 public class ObterClientePorIdQueryHanlder(
     IRepositorioCliente repositorioCliente
-    , IProvedorDeUsuario provedorDeUsuario)
+    , IProvedorDeUsuario provedorDeUsuario) : IRequestHandler<ObterClientePorIdQuery, Result<ClienteDto>>
 {
-    public async Task<Result<ClienteDto>> Handle(ObterClientePorIdQuery query)
+    public async Task<Result<ClienteDto>> Handle(
+        ObterClientePorIdQuery query,
+        CancellationToken cancellationToken = default)
     {
         if (query.ClienteId != provedorDeUsuario.Id)
         {
