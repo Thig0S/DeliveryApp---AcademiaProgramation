@@ -19,7 +19,8 @@ public class ClientesController(
         SignInManager<IdentityUser<Guid>> signInManager,
         RoleManager<IdentityRole<Guid>> roleManager,
         JwtProvider jwtProvider,
-        ObterClientePorIdHandler obterClientePorId
+        ObterClientePorIdQueryHanlder obterClientePorIdQueryHandler,
+        CadastrarClienteCommandHandler cadastrarClienteComandHandler
 ) : ControllerBase
 {
     [HttpGet("{clienteId:guid}")]
@@ -27,7 +28,7 @@ public class ClientesController(
         Guid clienteId
     )
     {
-        var resultado = await obterClientePorId.Handle(clienteId);
+        var resultado = await obterClientePorIdQueryHandler.Handle(new(clienteId));
 
         if (resultado.IsFailed)
         {
@@ -43,23 +44,11 @@ public class ClientesController(
     [HttpPost("cadastro")]
     public async Task<ActionResult<AutenticacaoClienteResponse>> Cadastrar(CadastrarClienteRequest req)
     {
-        var cliente = new Cliente(Guid.CreateVersion7(), req.Nome, req.Cpf);
-
-        var erros = cliente.Validar();
-
-        if (erros.Count > 0)
-        {
-            return BadRequest();
-        }
-
-        if (await dbContext.Clientes.AnyAsync(registro => registro.Cpf == cliente.Cpf))
-        {
-            return Conflict();
-        }
+        var id = Guid.CreateVersion7();
 
         var usuario = new IdentityUser<Guid>
         {
-            Id = cliente.Id,
+            Id = id,
             Email = req.Email.Trim(),
             UserName = req.Email.Trim()
         };
@@ -94,15 +83,13 @@ public class ClientesController(
                 return StatusCode(500);
             }
 
-            dbContext.Clientes.Add(cliente);
-
-            await dbContext.SaveChangesAsync();
+            await cadastrarClienteComandHandler.Handle(new(id, req.Nome, req.Cpf));
 
             var jwt = jwtProvider.CriarToken(usuario.Id, usuario.Email!, TipoUsuario.Cliente);
 
             return StatusCode(StatusCodes.Status201Created,
             new AutenticacaoClienteResponse(
-                cliente.Id,
+                id,
                 jwt.AccessToken,
                 jwt.DataExpiracaoEmUtc
             ));
