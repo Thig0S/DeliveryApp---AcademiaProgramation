@@ -1,7 +1,9 @@
+using DeliveryApp.Aplicacao.Modulos.Clientes;
 using DeliveryApp.Dominio.Compartilhado.Auth;
 using DeliveryApp.Dominio.Modulos.Clientes;
 using DeliveryApp.Infraestrutura.Orm;
 using DeliveryApp.WebApi.Compartilhado.Auth;
+using DeliveryApp.WebApi.Compartilhado.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +18,27 @@ public class ClientesController(
         UserManager<IdentityUser<Guid>> userManager,
         SignInManager<IdentityUser<Guid>> signInManager,
         RoleManager<IdentityRole<Guid>> roleManager,
-        JwtProvider jwtProvider
+        JwtProvider jwtProvider,
+        ObterClientePorIdHandler obterClientePorId
 ) : ControllerBase
 {
+    [HttpGet("{clienteId:guid}")]
+    public async Task<ActionResult<ClienteResponse>> ObterPorId(
+        Guid clienteId
+    )
+    {
+        var resultado = await obterClientePorId.Handle(clienteId);
+
+        if (resultado.IsFailed)
+        {
+            return this.ProblemDetails(resultado);
+        }
+
+        var response = resultado.Value;
+
+        return Ok(new ClienteResponse(response.Id, response.Nome, response.Cpf, response.Email));
+    }
+
     [AllowAnonymous]
     [HttpPost("cadastro")]
     public async Task<ActionResult<AutenticacaoClienteResponse>> Cadastrar(CadastrarClienteRequest req)
@@ -96,7 +116,7 @@ public class ClientesController(
     }
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<ActionResult> Login(AutenticarClienteRequest req)
+    public async Task<ActionResult> Autenticar(AutenticarClienteRequest req)
     {
         var usuario = await userManager.FindByEmailAsync(req.Email.Trim());
 
