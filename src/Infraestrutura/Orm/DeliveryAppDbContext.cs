@@ -20,13 +20,13 @@ public sealed class DeliveryAppDbContext(
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DeliveryAppDbContext).Assembly);
 
         //Criando o cargo cliente no banco de dados
-        // modelBuilder.Entity<IdentityUser<Guid>>().HasData(new IdentityRole<Guid>
-        // {
-        //     Id = TipoUsuarioClienteId,
-        //     Name = TipoUsuario.Cliente.ToString(),
-        //     NormalizedName = TipoUsuario.Cliente.ToString().ToUpper(),
-        //     ConcurrencyStamp = "01a0651d-7402-7053-874c-fe91e0612b5a"
-        // });
+        modelBuilder.Entity<IdentityRole<Guid>>().HasData(new IdentityRole<Guid>
+        {
+            Id = TipoUsuarioClienteId,
+            Name = TipoUsuario.Cliente.ToString(),
+            NormalizedName = TipoUsuario.Cliente.ToString().ToUpper(),
+            ConcurrencyStamp = "01a0651d-7402-7053-874c-fe91e0612b5a"
+        });
 
         if (provedorDeUsuario is not null)
         {
