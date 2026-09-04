@@ -15,9 +15,10 @@ namespace DeliveryApp.WebApi.Compartilhado.Modulos.Clientes;
 [ApiController]
 [Route("api/clientes")]
 public class ClientesController(
+        IGerenciadorDeIdentidade gerenciadorDeIdentidade,
         UserManager<IdentityUser<Guid>> userManager,
         SignInManager<IdentityUser<Guid>> signInManager,
-        IEmissorDeTokens emissorDeTokens ,
+        IEmissorDeTokens emissorDeTokens,
         IMediator mediator
 ) : ControllerBase
 {
@@ -44,46 +45,22 @@ public class ClientesController(
     [HttpPost("cadastro")]
     public async Task<ActionResult<CadastrarClienteResponse>> Cadastrar(CadastrarClienteRequest req)
     {
-        var id = Guid.CreateVersion7();
+        var resultadoCadastro = await mediator.Send(new CadastrarClienteComand(
+            req.Nome,
+            req.Cpf,
+            req.Email,
+            req.Senha
+        ));
 
-        var usuario = new IdentityUser<Guid>
-        {
-            Id = id,
-            Email = req.Email.Trim(),
-            UserName = req.Email.Trim()
-        };
+        if (resultadoCadastro.IsFailed)
+            return this.ProblemDetails(resultadoCadastro);
 
-        try
-        {
-            var resultadoUsuario = await userManager.CreateAsync(usuario, req.Senha);
-
-            if (!resultadoUsuario.Succeeded)
-                return BadRequest();
-
-            string tipoUsuario = TipoUsuario.Cliente.ToString();
-
-            var resultadoInclusaoRole = await userManager.AddToRoleAsync(usuario, tipoUsuario);
-
-            if (!resultadoInclusaoRole.Succeeded)
-            {
-                await userManager.DeleteAsync(usuario);
-
-                return StatusCode(500);
-            }
-
-            await mediator.Send(new CadastrarClienteComand(id, req.Nome, req.Cpf));
-
-            return Created(string.Empty, new CadastrarClienteResponse(
-                usuario.Id,
-                req.Nome
-            ));
-        }
-        catch (DbUpdateException)
-        {
-            await userManager.DeleteAsync(usuario);
-
-            return Conflict();
-        }
+        return CreatedAtAction(nameof(ObterPorId),
+        new { clienteid = resultadoCadastro.Value },
+        new CadastrarClienteResponse(
+            resultadoCadastro.Value,
+            req.Nome
+        ));
     }
     [AllowAnonymous]
     [HttpPost("login")]

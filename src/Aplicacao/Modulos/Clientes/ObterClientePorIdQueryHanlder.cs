@@ -1,4 +1,5 @@
 using DeliveryApp.Aplicacao.Compartilhado;
+using DeliveryApp.Aplicacao.Modulos.Clientes.Dtos;
 using DeliveryApp.Dominio.Compartilhado.Auth;
 using DeliveryApp.Dominio.Modulos.Clientes;
 using FluentResults;

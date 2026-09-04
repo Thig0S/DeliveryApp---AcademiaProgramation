@@ -1,5 +1,7 @@
+using System.Data.Common;
 using DeliveryApp.Aplicacao.Compartilhado;
 using DeliveryApp.Aplicacao.Modulos.Clientes;
+using DeliveryApp.Dominio.Compartilhado.Auth;
 using DeliveryApp.Dominio.Modulos.Clientes;
 using FluentResults;
 using MediatR;
@@ -7,18 +9,20 @@ using MediatR;
 namespace DeliveryApp.WebApi.Compartilhado.Modulos.Clientes;
 
 public sealed record CadastrarClienteComand(
-    Guid Id,
     string Nome,
-    string Cpf
-) : IRequest<Result>;
+    string Cpf,
+    string Email,
+    string Senha
+) : IRequest<Result<Guid>>;
 
 public sealed class CadastrarClienteCommandHandler(
-    IRepositorioCliente repositorioCliente
-) : IRequestHandler<CadastrarClienteComand, Result>
+    IRepositorioCliente repositorioCliente,
+    IGerenciadorDeIdentidade gerenciadorDeIdentidade
+) : IRequestHandler<CadastrarClienteComand, Result<Guid>>
 {
-    public async Task<Result> Handle(CadastrarClienteComand command, CancellationToken cancellationToken = default)
+    public async Task<Result<Guid>> Handle(CadastrarClienteComand command, CancellationToken cancellationToken = default)
     {
-        var cliente = new Cliente(command.Id, command.Nome, command.Cpf);
+        var cliente = new Cliente(Guid.CreateVersion7(), command.Nome, command.Cpf);
 
         var erros = cliente.Validar();
 
@@ -36,9 +40,33 @@ public sealed class CadastrarClienteCommandHandler(
                 );
         }
 
-        await repositorioCliente.CadastrarAsync(cliente);
+        try
+        {
+            UsuarioCadastrado usuario = await gerenciadorDeIdentidade.CadastrarAsync(
+                cliente.Id,
+                command.Email,
+                command.Senha,
+                TipoUsuario.Cliente
+            );
 
-        return Result.Ok();
+            await repositorioCliente.CadastrarAsync(cliente, cancellationToken);
 
+            return Result.Ok(cliente.Id);
+
+        }
+        catch (ValidacaoDeIdentidadeException excecao)
+        {
+            return Result.Fail(ErrosDeClientes.ValidacaoDeIdentidade(excecao.Campo, excecao.Message));
+        }
+        catch (ConflitoDeIdentidadeException excecao)
+        {
+            return Result.Fail(ErrosDeClientes.ConflitoDeIdentidade(excecao.Message));
+        }
+        catch (DbException)
+        {
+            await gerenciadorDeIdentidade.ExcluirAsync(cliente.Id);
+
+            return Result.Fail(ErrosDeClientes.CadastroDuplicado());
+        }
     }
 }
