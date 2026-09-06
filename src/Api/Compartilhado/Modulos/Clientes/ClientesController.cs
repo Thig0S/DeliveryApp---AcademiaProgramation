@@ -1,21 +1,16 @@
 using DeliveryApp.Aplicacao.Modulos.Clientes;
 using DeliveryApp.Dominio.Compartilhado.Auth;
-using DeliveryApp.Dominio.Modulos.Clientes;
-using DeliveryApp.Infraestrutura.Orm;
-using DeliveryApp.WebApi.Compartilhado.Auth;
 using DeliveryApp.WebApi.Compartilhado.Http;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DeliveryApp.WebApi.Compartilhado.Modulos.Clientes;
 
 [ApiController]
 [Route("api/clientes")]
 public class ClientesController(
-        IGerenciadorDeIdentidade gerenciadorDeIdentidade,
         UserManager<IdentityUser<Guid>> userManager,
         SignInManager<IdentityUser<Guid>> signInManager,
         IEmissorDeTokens emissorDeTokens,

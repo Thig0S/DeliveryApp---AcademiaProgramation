@@ -9,12 +9,13 @@ public sealed class ValidacaoDeIdentidadeException(
 };
 
 public sealed class ConflitoDeIdentidadeException(string mensagem) : Exception(mensagem);
+public sealed class ConflitoDePersistenciaException(string mensagem) : Exception(mensagem);
 
-public sealed record UsuarioCadastrado(Guid Id, string Email);
+public sealed record UsuarioDto(Guid Id, string Email);
 
 public interface IGerenciadorDeIdentidade
 {
-    Task<UsuarioCadastrado> CadastrarAsync(
+    Task<UsuarioDto> CadastrarAsync(
         Guid id,
         string email,
         string senha,
