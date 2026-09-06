@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using DeliveryApp.Dominio.Compartilhado.Auth;
 using DeliveryApp.Dominio.Modulos.Clientes;
+using DeliveryApp.Dominio.Modulos.Estabelecimento;
 
 namespace DeliveryApp.Infraestrutura.Orm;
 
@@ -12,7 +13,9 @@ public sealed class DeliveryAppDbContext(
 ) : IdentityDbContext<IdentityUser<Guid>, IdentityRole<Guid>, Guid>(options)
 {
     private static readonly Guid TipoUsuarioClienteId = new("01a0651a-a522-7a83-a062-033b797331d0");
+    private static readonly Guid TipoUsuarioEstabelecimentoId = new("01a07438-2887-75ff-93a6-6ac0a56b1d18");
     public DbSet<Cliente> Clientes => Set<Cliente>();
+    public DbSet<Estabelecimento> Estabelecimentos => Set<Estabelecimento>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -26,6 +29,14 @@ public sealed class DeliveryAppDbContext(
             Name = TipoUsuario.Cliente.ToString(),
             NormalizedName = TipoUsuario.Cliente.ToString().ToUpper(),
             ConcurrencyStamp = "01a0651d-7402-7053-874c-fe91e0612b5a"
+        });
+        //criando o cargo de Estabelecimento no banco
+        modelBuilder.Entity<IdentityRole<Guid>>().HasData(new IdentityRole<Guid>
+        {
+            Id = TipoUsuarioEstabelecimentoId,
+            Name = TipoUsuario.Estabelecimento.ToString(),
+            NormalizedName = TipoUsuario.Estabelecimento.ToString().ToUpper(),
+            ConcurrencyStamp = "01a07439-2af3-7cde-9fff-a18ac391b8d7"
         });
 
         if (provedorDeUsuario is not null)
