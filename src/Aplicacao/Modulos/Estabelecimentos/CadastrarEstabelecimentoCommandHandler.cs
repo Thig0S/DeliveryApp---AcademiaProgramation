@@ -6,18 +6,6 @@ using MediatR;
 
 namespace DeliveryApp.Aplicacao.Modulos.Estabelecimentos;
 
-public sealed record CadastrarEstabelecimentoCommand(
-    string NomeComercial,
-    string Documento,
-    string Endereco,
-    string Telefone,
-    string AreaAtendimento,
-    TimeOnly HoraAbertura,
-    TimeOnly HoraFechamento,
-    string Email,
-    string Senha
-) : IRequest<Result<Guid>>;
-
 public class CadastrarEstabelecimentoCommandHandler(IGerenciadorDeIdentidade gerenciadorDeIdentidade,
     IRepositorioEstabelecimento repositorioEstabelecimento) :
 

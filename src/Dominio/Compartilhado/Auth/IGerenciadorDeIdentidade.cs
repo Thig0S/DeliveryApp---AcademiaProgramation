@@ -21,6 +21,7 @@ public interface IGerenciadorDeIdentidade
         string senha,
         TipoUsuario tipo
     );
+    Task<UsuarioDto?> ChecarValidadeDeSenhaAsync(string email, string senha, TipoUsuario tipo);
     Task ExcluirAsync(
         Guid usuarioId
     );
