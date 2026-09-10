@@ -1,4 +1,4 @@
-namespace DeliveryApp.WebApi.Compartilhado.Modulos.Clientes;
+namespace DeliveryApp.WebApi.Modulos.Clientes;
 
 public sealed record CadastrarClienteRequest(
     string Nome,
@@ -12,12 +12,12 @@ public sealed record CadastrarClienteResponse(
     string Nome
 );
 
-public sealed record AutenticacaoClienteResponse(
+public sealed record AutenticarClienteRequest(string Email, string Senha);
+
+public sealed record AutenticarClienteResponse(
     Guid ClienteId,
     string AccessToken,
     DateTime DataExpiracaoEmUtc
 );
-
-public sealed record AutenticarClienteRequest(string Email, string Senha);
 
 public sealed record ClienteResponse(Guid Id, string Nome, string Cpf, string Email);

@@ -1,11 +1,11 @@
-using DeliveryApp.Dominio.Modulos.Estabelecimento;
+using DeliveryApp.Dominio.Modulos.Estabelecimentos;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DeliveryApp.Infraestrutura.Config;
+namespace DeliveryApp.Infraestrutura.Compartilhado.Orm.Config;
 
-public class EstabelecimentoConfigurations : IEntityTypeConfiguration<Estabelecimento>
+public sealed class EstabelecimentoConfiguration : IEntityTypeConfiguration<Estabelecimento>
 {
     public void Configure(EntityTypeBuilder<Estabelecimento> builder)
     {

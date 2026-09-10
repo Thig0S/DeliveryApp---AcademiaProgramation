@@ -1,14 +1,13 @@
-using System.Data.Common;
-using DeliveryApp.Aplicacao.Compartilhado;
-using DeliveryApp.Aplicacao.Modulos.Clientes;
+using DeliveryApp.Aplicacao.Modulos.Clientes.Util;
+using DeliveryApp.Dominio.Compartilhado;
 using DeliveryApp.Dominio.Compartilhado.Auth;
 using DeliveryApp.Dominio.Modulos.Clientes;
 using FluentResults;
 using MediatR;
 
-namespace DeliveryApp.WebApi.Compartilhado.Modulos.Clientes;
+namespace DeliveryApp.Aplicacao.Modulos.Clientes;
 
-public sealed record CadastrarClienteComand(
+public sealed record CadastrarClienteCommand(
     string Nome,
     string Cpf,
     string Email,
@@ -18,27 +17,26 @@ public sealed record CadastrarClienteComand(
 public sealed class CadastrarClienteCommandHandler(
     IRepositorioCliente repositorioCliente,
     IGerenciadorDeIdentidade gerenciadorDeIdentidade
-) : IRequestHandler<CadastrarClienteComand, Result<Guid>>
+) : IRequestHandler<CadastrarClienteCommand, Result<Guid>>
 {
-    public async Task<Result<Guid>> Handle(CadastrarClienteComand command, CancellationToken cancellationToken = default)
+    public async Task<Result<Guid>> Handle(
+        CadastrarClienteCommand command,
+        CancellationToken cancellationToken = default
+    )
     {
-        var cliente = new Cliente(Guid.CreateVersion7(), command.Nome, command.Cpf);
+        var cliente = new Cliente(
+            Guid.CreateVersion7(),
+            command.Nome,
+            command.Cpf
+        );
 
         var erros = cliente.Validar();
 
         if (erros.Count > 0)
-            return new Error("Cliente Invalido!")
-            .WithMetadata(nameof(TipoErro), TipoErro.Validacao);
+            return Result.Fail(ErrosDeCliente.Validacao(erros));
 
-        var clientes = await repositorioCliente.SelecionarTodosAsync();
-
-        if (clientes.Any(registro => registro.Cpf == cliente.Cpf))
-        {
-            return Result.Fail(new Error(
-                "Já existe um cliente com esse CPF!")
-                .WithMetadata(nameof(TipoErro), TipoErro.Conflito)
-                );
-        }
+        if (await repositorioCliente.ExisteRegistroComCpfAsync(cliente.Cpf, cancellationToken))
+            return Result.Fail(ErrosDeCliente.CpfDuplicado());
 
         try
         {
@@ -52,21 +50,20 @@ public sealed class CadastrarClienteCommandHandler(
             await repositorioCliente.CadastrarAsync(cliente, cancellationToken);
 
             return Result.Ok(cliente.Id);
-
         }
-        catch (ValidacaoDeIdentidadeException excecao)
+        catch (ValidacaoDeIdentidadeException ex)
         {
-            return Result.Fail(ErrosDeClientes.ValidacaoDeIdentidade(excecao.Campo, excecao.Message));
+            return Result.Fail(ErrosDeCliente.ValidacaoDeIdentidade(ex.Campo, ex.Message));
         }
-        catch (ConflitoDeIdentidadeException excecao)
+        catch (ConflitoDeIdentidadeException ex)
         {
-            return Result.Fail(ErrosDeClientes.ConflitoDeIdentidade(excecao.Message));
+            return Result.Fail(ErrosDeCliente.ConflitoDeIdentidade(ex.Message));
         }
-        catch (DbException)
+        catch (ConflitoDePersistenciaException)
         {
             await gerenciadorDeIdentidade.ExcluirAsync(cliente.Id);
 
-            return Result.Fail(ErrosDeClientes.CadastroDuplicado());
+            return Result.Fail(ErrosDeCliente.CadastroDuplicado());
         }
     }
 }

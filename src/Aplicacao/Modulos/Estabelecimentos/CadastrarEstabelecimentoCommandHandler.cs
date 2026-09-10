@@ -1,20 +1,33 @@
 using DeliveryApp.Aplicacao.Modulos.Estabelecimentos.Util;
+using DeliveryApp.Dominio.Compartilhado;
 using DeliveryApp.Dominio.Compartilhado.Auth;
-using DeliveryApp.Dominio.Modulos.Estabelecimento;
+using DeliveryApp.Dominio.Modulos.Estabelecimentos;
 using FluentResults;
 using MediatR;
 
 namespace DeliveryApp.Aplicacao.Modulos.Estabelecimentos;
 
-public class CadastrarEstabelecimentoCommandHandler(IGerenciadorDeIdentidade gerenciadorDeIdentidade,
-    IRepositorioEstabelecimento repositorioEstabelecimento) :
+public sealed record CadastrarEstabelecimentoCommand(
+    string NomeComercial,
+    string Documento,
+    string Endereco,
+    string Telefone,
+    string AreaAtendimento,
+    TimeOnly HorarioAbertura,
+    TimeOnly HorarioFechamento,
+    string Email,
+    string Senha
+) : IRequest<Result<Guid>>;
 
-    IRequestHandler<CadastrarEstabelecimentoCommand,
-    Result<Guid>>
+public sealed class CadastrarEstabelecimentoCommandHandler(
+    IGerenciadorDeIdentidade gerenciadorDeIdentidade,
+    IRepositorioEstabelecimento repositorioEstabelecimento
+) : IRequestHandler<CadastrarEstabelecimentoCommand, Result<Guid>>
 {
     public async Task<Result<Guid>> Handle(
         CadastrarEstabelecimentoCommand command,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default
+    )
     {
         var estabelecimento = new Estabelecimento(
             Guid.CreateVersion7(),
@@ -23,9 +36,9 @@ public class CadastrarEstabelecimentoCommandHandler(IGerenciadorDeIdentidade ger
             command.Endereco,
             command.Telefone,
             command.AreaAtendimento,
-            command.HoraAbertura,
-            command.HoraFechamento
-            );
+            command.HorarioAbertura,
+            command.HorarioFechamento
+        );
 
         var erros = estabelecimento.Validar();
 
@@ -53,11 +66,11 @@ public class CadastrarEstabelecimentoCommandHandler(IGerenciadorDeIdentidade ger
         {
             return Result.Fail(ErrosDeEstabelecimento.ConflitoDeIdentidade(ex.Message));
         }
-        catch (ConflitoDePersistenciaException ex)
+        catch (ConflitoDePersistenciaException)
         {
             await gerenciadorDeIdentidade.ExcluirAsync(estabelecimento.Id);
 
-            return Result.Fail(ErrosDeEstabelecimento.ConflitoDeIdentidade(ex.Message));
+            return Result.Fail(ErrosDeEstabelecimento.CadastroDuplicado());
         }
     }
 }

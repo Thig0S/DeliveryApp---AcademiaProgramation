@@ -1,12 +1,11 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DeliveryApp.Infraestrutura.Orm.Migrations
+namespace DeliveryApp.Infraestrutura.Compartilhado.Orm.Migrations
 {
     /// <inheritdoc />
-    public partial class seed_ClienteRole : Migration
+    public partial class Seed_ClienteRole : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -14,7 +13,7 @@ namespace DeliveryApp.Infraestrutura.Orm.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { new Guid("01a0651a-a522-7a83-a062-033b797331d0"), "01a0651d-7402-7053-874c-fe91e0612b5a", "Cliente", "CLIENTE" });
+                values: new object[] { new Guid("01a058f4-a048-79a3-b1a6-0f01d629a126"), "01a058f7-9492-73bc-8e4b-934c53594ed6", "Cliente", "CLIENTE" });
         }
 
         /// <inheritdoc />
@@ -23,7 +22,7 @@ namespace DeliveryApp.Infraestrutura.Orm.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("01a0651a-a522-7a83-a062-033b797331d0"));
+                keyValue: new Guid("01a058f4-a048-79a3-b1a6-0f01d629a126"));
         }
     }
 }

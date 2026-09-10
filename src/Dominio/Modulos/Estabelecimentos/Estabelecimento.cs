@@ -1,8 +1,8 @@
 using DeliveryApp.Dominio.Compartilhado;
 
-namespace DeliveryApp.Dominio.Modulos.Estabelecimento;
+namespace DeliveryApp.Dominio.Modulos.Estabelecimentos;
 
-public class Estabelecimento : EntidadeBase<Estabelecimento>
+public sealed class Estabelecimento : EntidadeBase<Estabelecimento>
 {
     public string NomeComercial { get; private set; } = string.Empty;
     public string Documento { get; private set; } = string.Empty;

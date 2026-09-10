@@ -1,3 +1,3 @@
-namespace DeliveryApp.Aplicacao.Modulos.Clientes.Dtos;
+namespace DeliveryApp.Aplicacao.Modulos.Clientes.DTOs;
 
-public sealed record ClienteDto(Guid Id, string Nome, string Cpf, string Email);
+public record ClienteDto(Guid Id, string Nome, string Cpf, string Email);

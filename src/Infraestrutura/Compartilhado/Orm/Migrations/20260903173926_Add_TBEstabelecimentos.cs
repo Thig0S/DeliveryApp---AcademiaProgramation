@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DeliveryApp.Infraestrutura.Orm.Migrations
+namespace DeliveryApp.Infraestrutura.Compartilhado.Orm.Migrations
 {
     /// <inheritdoc />
-    public partial class Add_TbEstabelecimento : Migration
+    public partial class Add_TBEstabelecimentos : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -39,7 +39,7 @@ namespace DeliveryApp.Infraestrutura.Orm.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { new Guid("01a07438-2887-75ff-93a6-6ac0a56b1d18"), "01a07439-2af3-7cde-9fff-a18ac391b8d7", "Estabelecimento", "ESTABELECIMENTO" });
+                values: new object[] { new Guid("01a06851-5e71-7ae2-822d-21e2fadcffa4"), "01a06852-c767-7d97-84e4-6b5f0775f3e5", "Estabelecimento", "ESTABELECIMENTO" });
         }
 
         /// <inheritdoc />
@@ -51,7 +51,7 @@ namespace DeliveryApp.Infraestrutura.Orm.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: new Guid("01a07438-2887-75ff-93a6-6ac0a56b1d18"));
+                keyValue: new Guid("01a06851-5e71-7ae2-822d-21e2fadcffa4"));
         }
     }
 }

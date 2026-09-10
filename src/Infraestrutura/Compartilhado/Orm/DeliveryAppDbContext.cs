@@ -3,45 +3,47 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using DeliveryApp.Dominio.Compartilhado.Auth;
 using DeliveryApp.Dominio.Modulos.Clientes;
-using DeliveryApp.Dominio.Modulos.Estabelecimento;
+using DeliveryApp.Dominio.Modulos.Estabelecimentos;
 
-namespace DeliveryApp.Infraestrutura.Orm;
+namespace DeliveryApp.Infraestrutura.Compartilhado.Orm;
 
 public sealed class DeliveryAppDbContext(
     DbContextOptions<DeliveryAppDbContext> options,
     IProvedorDeUsuario? provedorDeUsuario = null
 ) : IdentityDbContext<IdentityUser<Guid>, IdentityRole<Guid>, Guid>(options)
 {
-    private static readonly Guid TipoUsuarioClienteId = new("01a0651a-a522-7a83-a062-033b797331d0");
-    private static readonly Guid TipoUsuarioEstabelecimentoId = new("01a07438-2887-75ff-93a6-6ac0a56b1d18");
+    private static readonly Guid TipoUsuarioClienteId = new("01a058f4-a048-79a3-b1a6-0f01d629a126");
+    private static readonly Guid TipoUsuarioEstabelecimentoId = new("01a06851-5e71-7ae2-822d-21e2fadcffa4");
+
     public DbSet<Cliente> Clientes => Set<Cliente>();
     public DbSet<Estabelecimento> Estabelecimentos => Set<Estabelecimento>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DeliveryAppDbContext).Assembly);
 
-        //Criando o cargo cliente no banco de dados
+        // Criando o cargo CLIENTE no banco de dados
         modelBuilder.Entity<IdentityRole<Guid>>().HasData(new IdentityRole<Guid>
         {
             Id = TipoUsuarioClienteId,
             Name = TipoUsuario.Cliente.ToString(),
-            NormalizedName = TipoUsuario.Cliente.ToString().ToUpper(),
-            ConcurrencyStamp = "01a0651d-7402-7053-874c-fe91e0612b5a"
+            NormalizedName = TipoUsuario.Cliente.ToString().ToUpperInvariant(),
+            ConcurrencyStamp = "01a058f7-9492-73bc-8e4b-934c53594ed6"
         });
-        //criando o cargo de Estabelecimento no banco
+
+        // Criando o cargo ESTABELECIMENTO no banco de dados
         modelBuilder.Entity<IdentityRole<Guid>>().HasData(new IdentityRole<Guid>
         {
             Id = TipoUsuarioEstabelecimentoId,
             Name = TipoUsuario.Estabelecimento.ToString(),
-            NormalizedName = TipoUsuario.Estabelecimento.ToString().ToUpper(),
-            ConcurrencyStamp = "01a07439-2af3-7cde-9fff-a18ac391b8d7"
+            NormalizedName = TipoUsuario.Estabelecimento.ToString().ToUpperInvariant(),
+            ConcurrencyStamp = "01a06852-c767-7d97-84e4-6b5f0775f3e5"
         });
 
         if (provedorDeUsuario is not null)
         {
-
         }
     }
 

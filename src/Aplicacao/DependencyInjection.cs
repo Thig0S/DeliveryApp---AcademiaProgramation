@@ -1,5 +1,3 @@
-using DeliveryApp.Aplicacao.Modulos.Clientes;
-using DeliveryApp.WebApi.Compartilhado.Modulos.Clientes;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DeliveryApp.Aplicacao;
@@ -12,7 +10,7 @@ public static class DependencyInjection
     {
         services.AddMediatR(config =>
         {
-           config.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly); 
+            config.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
         });
     }
 }

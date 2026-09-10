@@ -11,7 +11,7 @@ public sealed class JwtProvider(IOptions<JwtOptions> jwtOptions) : IEmissorDeTok
 {
     private readonly JwtOptions options = jwtOptions.Value;
 
-    public AcessToken CriarToken(
+    public AccessToken CriarToken(
         Guid usuarioId,
         string email,
         TipoUsuario tipoUsuario
@@ -40,6 +40,6 @@ public sealed class JwtProvider(IOptions<JwtOptions> jwtOptions) : IEmissorDeTok
 
         string accessToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-        return new AcessToken(accessToken, dataExpiracao);
+        return new AccessToken(accessToken, dataExpiracao);
     }
 }

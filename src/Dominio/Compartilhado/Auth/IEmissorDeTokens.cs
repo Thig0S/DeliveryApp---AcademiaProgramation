@@ -1,7 +1,8 @@
 namespace DeliveryApp.Dominio.Compartilhado.Auth;
 
-public sealed record AcessToken(string Token, DateTime DataExpiracaoEmUtc);
+public sealed record AccessToken(string Token, DateTime DataExpiracaoEmUtc);
+
 public interface IEmissorDeTokens
 {
-    AcessToken CriarToken(Guid usuarioId, string email, TipoUsuario tipoUsuario);
+    AccessToken CriarToken(Guid usuarioId, string email, TipoUsuario tipoUsuario);
 }

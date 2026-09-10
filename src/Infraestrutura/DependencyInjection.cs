@@ -1,10 +1,10 @@
 using DeliveryApp.Dominio.Compartilhado.Auth;
 using DeliveryApp.Dominio.Modulos.Clientes;
-using DeliveryApp.Dominio.Modulos.Estabelecimento;
-using DeliveryApp.Infraestrutura.Auth;
+using DeliveryApp.Dominio.Modulos.Estabelecimentos;
+using DeliveryApp.Infraestrutura.Compartilhado.Auth;
+using DeliveryApp.Infraestrutura.Compartilhado.Orm;
 using DeliveryApp.Infraestrutura.Modulos.Clientes;
 using DeliveryApp.Infraestrutura.Modulos.Estabelecimentos;
-using DeliveryApp.Infraestrutura.Orm;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,9 +19,9 @@ public static class DependencyInjection
         IConfiguration configuration
     )
     {
+        services.AddScoped<IGerenciadorDeIdentidade, GerenciadorDeIdentidade>();
         services.AddScoped<IRepositorioCliente, RepositorioClienteEmOrm>();
         services.AddScoped<IRepositorioEstabelecimento, RepositorioEstabelecimentoEmOrm>();
-        services.AddScoped<IGerenciadorDeIdentidade, GerenciadorDeIdentidade>();
 
         services.AddDataProtection();
         services.AddIdentityCore<IdentityUser<Guid>>(options =>
@@ -38,9 +38,7 @@ public static class DependencyInjection
             options.Lockout.AllowedForNewUsers = true;
         })
         .AddRoles<IdentityRole<Guid>>()
-        .AddEntityFrameworkStores<DeliveryAppDbContext>()
-        .AddSignInManager()
-        .AddDefaultTokenProviders();
+        .AddEntityFrameworkStores<DeliveryAppDbContext>();
 
         services.AddDbContext<DeliveryAppDbContext>(options =>
         {

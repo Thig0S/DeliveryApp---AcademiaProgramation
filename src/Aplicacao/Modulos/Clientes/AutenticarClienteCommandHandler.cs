@@ -1,34 +1,34 @@
 using DeliveryApp.Aplicacao.Compartilhado;
-using DeliveryApp.Aplicacao.Modulos.Estabelecimentos.Util;
+using DeliveryApp.Aplicacao.Modulos.Clientes.Util;
 using DeliveryApp.Dominio.Compartilhado.Auth;
 using FluentResults;
 using MediatR;
 
-namespace DeliveryApp.Aplicacao.Modulos.Estabelecimentos;
+namespace DeliveryApp.Aplicacao.Modulos.Clientes;
 
-public sealed class AutenticarEstabelecimentoCommandHandler(
+public sealed class AutenticarClienteCommandHandler(
     IGerenciadorDeIdentidade gerenciadorDeIdentidade,
     IEmissorDeTokens emissorDeTokens
-) : IRequestHandler<AutenticarEstabelecimentoCommand, Result<AccessTokenDoUsuarioDto>>
+) : IRequestHandler<AutenticarClienteCommand, Result<AccessTokenDoUsuarioDto>>
 {
     public async Task<Result<AccessTokenDoUsuarioDto>> Handle(
-        AutenticarEstabelecimentoCommand request,
+        AutenticarClienteCommand request,
         CancellationToken cancellationToken = default
     )
     {
         var usuario = await gerenciadorDeIdentidade.ChecarValidadeDeSenhaAsync(
             request.Email,
             request.Senha,
-            TipoUsuario.Estabelecimento
+            TipoUsuario.Cliente
         );
 
         if (usuario is null)
-            return Result.Fail(ErrosDeEstabelecimento.CredenciaisInvalidas());
+            return Result.Fail(ErrosDeCliente.CredenciaisInvalidas());
 
         var accessToken = emissorDeTokens.CriarToken(
             usuario.Id,
             usuario.Email,
-            TipoUsuario.Estabelecimento
+            TipoUsuario.Cliente
         );
 
         return Result.Ok(new AccessTokenDoUsuarioDto(

@@ -1,9 +1,8 @@
-using DeliveryApp.Dominio.Modulos.Estabelecimento;
-using DeliveryApp.Infraestrutura.Orm;
+using DeliveryApp.Dominio.Modulos.Estabelecimentos;
+using DeliveryApp.Infraestrutura.Compartilhado.Orm;
 
 namespace DeliveryApp.Infraestrutura.Modulos.Estabelecimentos;
 
-public class RepositorioEstabelecimentoEmOrm(DeliveryAppDbContext dbContext) :
-    RepositorioBaseEmOrm<Estabelecimento>(dbContext), IRepositorioEstabelecimento
-{
-}
+public sealed class RepositorioEstabelecimentoEmOrm(
+    DeliveryAppDbContext dbContext
+) : RepositorioBaseEmOrm<Estabelecimento>(dbContext), IRepositorioEstabelecimento;

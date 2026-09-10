@@ -6,23 +6,24 @@ public sealed class ValidacaoDeIdentidadeException(
 ) : Exception(mensagem)
 {
     public string Campo { get; } = campo;
-};
+}
 
 public sealed class ConflitoDeIdentidadeException(string mensagem) : Exception(mensagem);
-public sealed class ConflitoDePersistenciaException(string mensagem) : Exception(mensagem);
 
 public sealed record UsuarioDto(Guid Id, string Email);
 
 public interface IGerenciadorDeIdentidade
 {
     Task<UsuarioDto> CadastrarAsync(
-        Guid id,
+        Guid usuarioId,
         string email,
         string senha,
         TipoUsuario tipo
     );
-    Task<UsuarioDto?> ChecarValidadeDeSenhaAsync(string email, string senha, TipoUsuario tipo);
-    Task ExcluirAsync(
-        Guid usuarioId
+    Task<UsuarioDto?> ChecarValidadeDeSenhaAsync(
+        string email,
+        string senha,
+        TipoUsuario tipo
     );
+    Task ExcluirAsync(Guid usuarioId);
 }

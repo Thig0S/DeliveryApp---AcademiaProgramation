@@ -4,7 +4,7 @@ using FluentResults;
 
 namespace DeliveryApp.Aplicacao.Modulos.Estabelecimentos.Util;
 
-public class ErrosDeEstabelecimento
+public static class ErrosDeEstabelecimento
 {
     public static Error CredenciaisInvalidas()
     {
