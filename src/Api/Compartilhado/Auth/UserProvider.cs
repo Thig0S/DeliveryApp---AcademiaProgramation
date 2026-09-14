@@ -28,4 +28,12 @@ public sealed class UserProvider(IHttpContextAccessor httpContextAccessor) : IPr
 
     public bool EstaAutenticado => Id.HasValue;
 
+    public bool PossuiTipo(TipoUsuario tipoUsuario)
+    {
+        ClaimsPrincipal? user = httpContextAccessor.HttpContext?.User;
+
+        return user?.Identity?.IsAuthenticated == true && user.IsInRole(tipoUsuario.ToString());
+    }
+
+    
 }
