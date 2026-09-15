@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using DeliveryApp.Dominio.Compartilhado;
 using DeliveryApp.Dominio.Compartilhado.Auth;
@@ -132,7 +133,42 @@ public sealed class Pedido : EntidadeBase<Pedido>
         erro = null;
         return true;
     }
+    public bool TentarAlterarStatus(
+        AcaoPedido acao,
+        Guid usuarioId,
+        TipoUsuario tipoUsuario,
+        string? motivo,
+        DateTimeOffset ocorridaEmUtc,
+        out string? erro
+    )
+    {
+        if (motivo?.Trim().Length > TransicaoStatusPedido.TamanhoMaximoMotivo)
+        {
+            erro = $"O motivo deve possuir no máximo {TransicaoStatusPedido.TamanhoMaximoMotivo} caracteres!";
+            return false;
+        }
 
+        if (!TentarObterNovoStatus(acao, tipoUsuario, out StatusPedido novoStatus, out erro))
+            return false;
+
+        StatusPedido statusAnterior = Status;
+        Status = novoStatus;
+
+        AtualizadoEmUtc = ocorridaEmUtc;
+        Versao++;
+
+        Historico.Add(new TransicaoStatusPedido(
+            usuarioId,
+            tipoUsuario,
+            statusAnterior,
+            Status,
+            motivo,
+            AtualizadoEmUtc
+        ));
+
+        erro = null;
+        return true;
+    }
     public override IReadOnlyList<ErroValidacao> Validar()
     {
         List<ErroValidacao> erros = [];
