@@ -1,3 +1,7 @@
+using DeliveryApp.Dominio.Compartilhado.Auth;
+using DeliveryApp.Dominio.Modulos.Pedidos;
+using MediatR;
+
 namespace DeliveryApp.Aplicacao.Modulos.Pedidos.Mensageria;
 
 public sealed record ItemCriarPedidoMessage(
@@ -14,4 +18,14 @@ public sealed record CriarPedidoMessage(
     string EnderecoEntrega,
     IReadOnlyList<ItemCriarPedidoMessage> Itens,
     DateTimeOffset SolicitadoEmUtc
+);
+
+public sealed record AlterarStatusPedidoMessage(
+    Guid PedidoId,
+    Guid UsuarioId,
+    TipoUsuario TipoUsuario,
+    AcaoPedido Acao,
+    string? Motivo,
+    DateTimeOffset OcorrenciaUtc,
+    uint Versao
 );
