@@ -11,6 +11,7 @@ public sealed class Estabelecimento : EntidadeBase<Estabelecimento>
     public string AreaAtendimento { get; private set; } = string.Empty;
     public TimeOnly HorarioAbertura { get; private set; }
     public TimeOnly HorarioFechamento { get; private set; }
+    public decimal TaxaEntrega { get; private set; }
     public bool Ativo { get; private set; }
 
     private Estabelecimento() { }
@@ -86,5 +87,16 @@ public sealed class Estabelecimento : EntidadeBase<Estabelecimento>
     private static string NormalizarStringNumerica(string valor)
     {
         return new string(valor.Where(char.IsDigit).ToArray());
+    }
+
+    public bool EstaDisponivel(TimeOnly horaDeAgora)
+    {
+        if (!Ativo)
+            return false;
+
+        if (HorarioAbertura < HorarioFechamento)
+            return horaDeAgora >= HorarioAbertura && horaDeAgora < HorarioFechamento;
+
+        return horaDeAgora >= HorarioAbertura || horaDeAgora < HorarioFechamento;
     }
 }

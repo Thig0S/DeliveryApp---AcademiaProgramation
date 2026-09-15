@@ -34,6 +34,9 @@ public sealed class EstabelecimentoConfiguration : IEntityTypeConfiguration<Esta
             .HasMaxLength(150)
             .IsRequired();
 
+        builder.Property(e => e.TaxaEntrega)
+            .HasPrecision(10, 2);
+
         builder.HasOne<IdentityUser<Guid>>()
             .WithOne()
             .HasForeignKey<Estabelecimento>(e => e.Id)

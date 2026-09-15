@@ -13,4 +13,6 @@ public interface IRepositorioEstabelecimento : IRepositorio<Estabelecimento>
         bool ativo,
         CancellationToken cancellationToken = default
     );
+    Task<Estabelecimento?> SelecionarParaPedidoAsync
+        (Guid estabelecimentoId, CancellationToken cancellationToken);
 }

@@ -23,7 +23,8 @@ public sealed class ItemPedido
         int quantidade,
         decimal precoUnitario,
         string? observacao
-    )
+,
+        List<ComplementoItemPedido> complementos)
     {
         Id = Guid.CreateVersion7();
         ProdutoId = produtoId;
@@ -32,5 +33,6 @@ public sealed class ItemPedido
         PrecoUnitario = precoUnitario;
         ValorTotal = quantidade * (precoUnitario + Complementos.Sum(c => c.PrecoAdicional));
         Observacao = string.IsNullOrWhiteSpace(observacao) ? null : observacao.Trim();
+        Complementos = complementos.ToList();
     }
 }
